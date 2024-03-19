@@ -1,7 +1,9 @@
 const express = require('express');
+const cors = require('cors'); // Require cors middleware
 const app = express();
 const path = require('path');
 
+app.use(cors()); // Use cors middleware
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
