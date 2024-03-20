@@ -4,11 +4,7 @@ const app = express();
 const path = require('path');
 const { Pool } = require('pg');
 
-// Set up CORS middleware to allow requests from 'http://localhost:3000'
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
-
+app.use(cors()); // Use cors middleware
 app.use(express.static('public'));
 
 const pool = new Pool({
@@ -22,13 +18,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Modify this route
-app.get('/hello', async (req, res) => {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM countries LIMIT 1');
-    const firstRow = result.rows[0];
-    res.send(`hello frontend, 1st row of table countries: ${JSON.stringify(firstRow)}`);
-    client.release();
+// Add this new route
+app.get('/hello', (req, res) => {
+    res.send('hello frontend');
 });
 
 // Add the /countries route
