@@ -4,7 +4,11 @@ const app = express();
 const path = require('path');
 const { Pool } = require('pg');
 
-app.use(cors()); // Use cors middleware
+// Set up CORS middleware to allow requests from 'http://localhost:3000'
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
+
 app.use(express.static('public'));
 
 const pool = new Pool({
