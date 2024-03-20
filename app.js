@@ -33,4 +33,7 @@ app.get('/countries', async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+  console.log('test01 - print'); // Print 'test01 - print' to the console
+});
