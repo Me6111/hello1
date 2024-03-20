@@ -25,16 +25,17 @@ app.get('/hello', (req, res) => {
 
 // Add the /countries route
 app.get('/countries', async (req, res) => {
-    try {
-      const client = await pool.connect();
-      const result = await client.query('SELECT * FROM countries');
-      const results = { 'results': (result) ? result.rows : null};
-      res.send('full countries content: ' + JSON.stringify(results));
-      client.release();
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error: ' + err.message);
-    }
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM countries');
+    const results = { 'results': (result) ? result.rows : null};
+    console.log(results); // Log the results to the console
+    res.send(results);
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error: ' + err.message);
+  }
 });
 
 const port = process.env.PORT || 3000;
