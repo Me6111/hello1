@@ -33,9 +33,9 @@ app.get('/countries', async (req, res) => {
       client.release();
     } catch (err) {
       console.error(err);
-      res.status(500).send('Server error');
+      res.status(500).send('Server error: ' + err.message);
     }
-  });
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
