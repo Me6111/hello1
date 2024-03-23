@@ -25,7 +25,7 @@ app.get('/hello', (req, res) => {
 
 app.get('/countries', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM country');
+    const result = await pool.query('SELECT * FROM state');
     console.log(result.rows);
     res.send(result.rows);
   } catch (err) {
@@ -46,8 +46,7 @@ const groupedData = data.reduce((acc, item) => {
     acc[tableName] = [];
   }
   acc[tableName].push(item.fields);
-  return acc;
-}, {});
+ }, {});
 
 // Iterate over each table in the data
 for (const tableName in groupedData) {
