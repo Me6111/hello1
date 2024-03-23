@@ -25,7 +25,7 @@ app.get('/hello', (req, res) => {
 
 app.get('/countries', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM state');
+    const result = await pool.query('SELECT * FROM country');
     console.log(result.rows);
     res.send(result.rows);
   } catch (err) {
