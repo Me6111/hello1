@@ -1,10 +1,10 @@
 const express = require('express');
-const cors = require('cors');
+const cors = require('cors'); // Require cors middleware
 const app = express();
 const path = require('path');
-const { Pool } = require('pg');
-const fs = require('fs');
+const { Pool } = require('pg'); // Require pg module
 
+// Create a new pool using the DATABASE_URL environment variable
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -12,13 +12,14 @@ const pool = new Pool({
   }
 });
 
-app.use(cors());
+app.use(cors()); // Use cors middleware
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Add this new route
 app.get('/hello', (req, res) => {
     res.send('hello frontend');
 });
@@ -34,42 +35,35 @@ app.get('/countries', async (req, res) => {
     }
 });
 
-// Read the JSON file
-fs.readFile('mysql_locations.json', 'utf8', async (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  // Parse the JSON data
-  const jsonData = JSON.parse(data);
-
-  // Iterate over each table in the data
-  for (const table in jsonData) {
-    // Create table if not exists
-    const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (${Object.keys(jsonData[table][0]).join(' text, ')} text)`;
-    try {
-      await pool.query(createTableQuery);
-    } catch (err) {
-      console.error(err);
-    }
-
-    // Iterate over each record in the table
-    for (const record of jsonData[table]) {
-      // Build an SQL query to insert the record into the table
-      const columns = Object.keys(record).join(', ');
-      const values = Object.values(record).map(value => `'${value}'`).join(', ');
-      const query = `INSERT INTO ${table} (${columns}) VALUES (${values})`;
-
-      // Execute the query
-      try {
-        await pool.query(query);
-      } catch (err) {
-        console.error(err);
-      }
-    }
+app.get('/deleteTables', (req, res) => {
+  // Prompt for confirmation before deleting
+  if (req.query.confirm === 'yes') {
+    deleteTables(pool)
+      .then(() => res.send('Tables deleted successfully'))
+      .catch(err => res.status(500).send(`Error deleting tables: ${err}`));
+  } else {
+    res.send('Are you sure you want to delete all tables? This action cannot be undone. (Respond with ?confirm=yes to confirm)');
   }
 });
 
+async function deleteTables(pool) {
+  try {
+    // Get a list of all tables (consider using information_schema)
+    const result = await pool.query('SELECT table_name FROM information_schema.tables WHERE table_schema = \'public\''); // Modify schema name if needed
+
+    if (!result.rows.length) {
+      return res.send('No tables found');
+    }
+
+    const deleteQueries = result.rows.map(row => `DROP TABLE ${row.table_name}`);
+    for (const query of deleteQueries) {
+      await pool.query(query);
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+
+
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+app.listen(port, () => console.log(`Server running on port ${port}`)); 
