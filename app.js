@@ -1,10 +1,10 @@
 const express = require('express');
-const cors = require('cors'); // Require cors middleware
+const cors = require('cors');
 const app = express();
 const path = require('path');
-const { Pool } = require('pg'); // Require pg module
+const { Pool } = require('pg');
+const fs = require('fs'); // Require fs module
 
-// Create a new pool using the DATABASE_URL environment variable
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -12,14 +12,13 @@ const pool = new Pool({
   }
 });
 
-app.use(cors()); // Use cors middleware
+app.use(cors());
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Add this new route
 app.get('/hello', (req, res) => {
     res.send('hello frontend');
 });
@@ -35,5 +34,34 @@ app.get('/countries', async (req, res) => {
     }
 });
 
+// Read the JSON file
+fs.readFile('mysql_locations.json', 'utf8', async (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  // Parse the JSON data
+  const jsonData = JSON.parse(data);
+
+  // Iterate over each table in the data
+  for (const table in jsonData) {
+    // Iterate over each record in the table
+    for (const record of jsonData[table]) {
+      // Build an SQL query to insert the record into the table
+      const columns = Object.keys(record).join(', ');
+      const values = Object.values(record).map(value => `'${value}'`).join(', ');
+      const query = `INSERT INTO ${table} (${columns}) VALUES (${values})`;
+
+      // Execute the query
+      try {
+        await pool.query(query);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+});
+
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`)); 
+app.listen(port, () => console.log(`Server running on port ${port}`));
