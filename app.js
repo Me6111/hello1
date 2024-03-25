@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 const path = require('path');
 const { Pool } = require('pg');
-const fs = require('fs'); // Require fs module
+const fs = require('fs');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -46,6 +46,14 @@ fs.readFile('mysql_locations.json', 'utf8', async (err, data) => {
 
   // Iterate over each table in the data
   for (const table in jsonData) {
+    // Create table if not exists
+    const createTableQuery = `CREATE TABLE IF NOT EXISTS ${table} (${Object.keys(jsonData[table][0]).join(' text, ')} text)`;
+    try {
+      await pool.query(createTableQuery);
+    } catch (err) {
+      console.error(err);
+    }
+
     // Iterate over each record in the table
     for (const record of jsonData[table]) {
       // Build an SQL query to insert the record into the table
