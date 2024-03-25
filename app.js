@@ -36,14 +36,10 @@ app.get('/countries', async (req, res) => {
 });
 
 app.get('/deleteTables', (req, res) => {
-  // Prompt for confirmation before deleting
-  if (req.query.confirm === 'yes') {
     deleteTables(pool)
       .then(() => res.send('Tables deleted successfully'))
       .catch(err => res.status(500).send(`Error deleting tables: ${err}`));
-  } else {
-    res.send('Are you sure you want to delete all tables? This action cannot be undone. (Respond with ?confirm=yes to confirm)');
-  }
+
 });
 
 async function deleteTables(pool) {
