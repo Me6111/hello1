@@ -13,6 +13,7 @@ const pool = new Pool({
 });
 
 app.use(cors()); // Use cors middleware
+app.use(express.json()); // Use express.json middleware to parse JSON bodies
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
@@ -24,8 +25,11 @@ app.get('/hello', (req, res) => {
     res.send('hello frontend');
 });
 
-app.get('/countries', async (req, res) => {
+app.post('/countries', async (req, res) => {
   try {
+    const country = req.body.country;
+    console.log(`Received country from client: ${country}`);
+    
     const result = await pool.query('SELECT * FROM countries');
     console.log(result.rows);
     res.send(result.rows);
