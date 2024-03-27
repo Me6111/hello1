@@ -24,11 +24,8 @@ app.get('/hello', (req, res) => {
     res.send('hello frontend');
 });
 
-app.post('/countries', async (req, res) => {
+app.get('/countries', async (req, res) => {
   try {
-    const country = req.body.country;
-    console.log(`Received country from client: ${country}`);
-    
     const result = await pool.query('SELECT * FROM countries');
     console.log(result.rows);
     res.send(result.rows);
