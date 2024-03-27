@@ -29,7 +29,7 @@ app.post('/countries', async (req, res) => {
     const country = req.body.country;
     console.log(`Received country from client: ${country}`);
     
-    const result = await pool.query('SELECT * FROM countries WHERE name = $1', [country]);
+    const result = await pool.query('SELECT * FROM countries');
     console.log(result.rows);
     res.send(result.rows);
   } catch (err) {
