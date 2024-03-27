@@ -33,10 +33,13 @@ app.post('/countries', async (req, res) => {
     const country_id_qq = await pool.query("SELECT country_id FROM countries WHERE country = '" + country + "'");
     const country_id = country_id_qq.rows[0].country_id;
 
+    const states_list_qq = await pool.query("SELECT * FROM states WHERE country_id = '" + country_id + "'");
+    const states_list = states_list_qq.rows;
 
 
-    console.log(country_id);
-    res.send({country_id});
+
+    console.log(states_list);
+    res.send({states_list});
   } catch (err) {
     console.error(err);
     res.status(500).send('Error occurred');
