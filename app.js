@@ -33,7 +33,7 @@ app.post('/countries', async (req, res) => {
     const country_id_qq = await pool.query("SELECT country_id FROM countries WHERE country = '" + country + "'");
     const country_id = country_id_qq.rows[0].country_id;
 
-    const states_list_qq = await pool.query("SELECT * FROM states WHERE country_id = '" + country_id + "'");
+    const states_list_qq = await pool.query("SELECT state FROM states WHERE country_id = '" + country_id + "'");
     const states_list = states_list_qq.rows;
 
 
