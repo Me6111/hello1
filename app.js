@@ -31,8 +31,8 @@ app.post('/countries', async (req, res) => {
     console.log(`Received country from client: ${country}`);
     
     const country_id = await pool.query("SELECT country_id FROM countries WHERE country = '" + country + "'");
-    console.log(country_id.rows);
-    res.send(country_id.rows);
+    console.log(country_id);
+    res.send(country_id);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error occurred');
