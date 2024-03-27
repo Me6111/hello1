@@ -30,14 +30,13 @@ app.post('/countries', async (req, res) => {
     const country = req.body.country;
     console.log(`Received country from client: ${country}`);
     
-    const result = await pool.query("SELECT country_id FROM countries WHERE country = $1", [country]);
-    if (result.rows.length > 0) {
-      const country_id = result.rows[0].country_id;
-      console.log(country_id);
-      res.send({country_id});
-    } else {
-      res.status(404).send('Country not found');
-    }
+    const country_id_qq = await pool.query("SELECT country_id FROM countries WHERE country = '" + country + "'");
+    const country_id = country_id_qq.rows[0].country_id;
+
+
+
+    console.log(country_id);
+    res.send({country_id});
   } catch (err) {
     console.error(err);
     res.status(500).send('Error occurred');
